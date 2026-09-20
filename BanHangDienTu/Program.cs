@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BanHangDienTu.Data;
-var builder = WebApplication.CreateBuilder(args);
-namespace BanHangDienTu
 
+namespace BanHangDienTu
 {
     public class Program
     {
@@ -13,6 +12,10 @@ namespace BanHangDienTu
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            // Đăng ký ApplicationDbContext với SQL Server
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -22,13 +25,6 @@ namespace BanHangDienTu
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
-            // Đăng ký ApplicationDbContext với SQL Server
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
 
             app.UseHttpsRedirection();
             app.UseRouting();

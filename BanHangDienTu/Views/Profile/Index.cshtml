@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Hồ sơ của tôi</h3>
+                    <div class="mb-3">
+                        <label class="text-muted small">Tên người dùng:</label>
+                        <p class="fw-semibold fs-5 mb-1">Nguyễn Văn A</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Email:</label>
+                        <p class="fw-semibold mb-1">nguyenvana@example.com</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Số điện thoại:</label>
+                        <p class="fw-semibold mb-1">0901 234 567</p>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Đơn mua của bạn:</strong>
+                            <p class="text-muted small mb-0">Theo dõi trạng thái và lịch sử mua hàng</p>
+                        </div>
+                        <a asp-controller="OrderHistory" asp-action="Index" class="btn btn-danger">
+                            Xem lịch sử mua hàng &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

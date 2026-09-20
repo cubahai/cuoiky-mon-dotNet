@@ -1,0 +1,85 @@
+@model List<BanHangDienTu.Models.CartItemViewModel>
+@{
+    ViewData["Title"] = "Giỏ hàng của bạn";
+    var grandTotal = Model?.Sum(x => x.TotalPrice) ?? 0;
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Giỏ hàng của bạn</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            Giỏ hàng của bạn đang trống. <a asp-controller="Home" asp-action="Index">Mua sắm ngay!</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 100px;">Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th class="text-end" style="width: 150px;">Đơn giá</th>
+                        <th class="text-center" style="width: 120px;">Số lượng</th>
+                        <th class="text-end" style="width: 160px;">Thành tiền</th>
+                        <th class="text-center" style="width: 100px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.ImageUrl" alt="@item.ProductName" class="img-thumbnail" style="max-height: 70px; width: 70px; object-fit: cover;" />
+                            </td>
+                            <td>
+                                <span class="fw-semibold">@item.ProductName</span>
+                            </td>
+                            <td class="text-end">
+                                @item.Price.ToString("N0") đ
+                            </td>
+                            <td class="text-center">
+                                <input type="number" class="form-control text-center mx-auto" style="width: 70px;" value="@item.Quantity" min="1" readonly />
+                            </td>
+                            <td class="text-end text-danger fw-bold">
+                                @item.TotalPrice.ToString("N0") đ
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Xóa">Xóa</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end mt-4">
+            <div class="col-md-5 col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Tóm tắt đơn hàng</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính:</span>
+                            <span class="fw-bold">@grandTotal.ToString("N0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Phí vận chuyển:</span>
+                            <span class="text-success fw-bold">Miễn phí</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-3 fs-5">
+                            <strong>Tổng thanh toán:</strong>
+                            <strong class="text-danger">@grandTotal.ToString("N0") đ</strong>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-danger btn-lg" type="button">Tiến hành Đặt hàng</button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Tiếp tục mua sắm</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
