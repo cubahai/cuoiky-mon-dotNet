@@ -1,0 +1,125 @@
+@model BanHangDienTu.ViewModels.Product.ProductDetailViewModel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <a asp-controller="Product"
+           asp-action="Index"
+           class="text-decoration-none">
+            ← Quay lại danh sách sản phẩm
+        </a>
+    </div>
+
+    <div class="row g-5">
+
+        <div class="col-12 col-lg-6">
+
+            <div class="border rounded bg-white p-4 text-center">
+
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.Name"
+                         class="img-fluid"
+                         style="max-height: 450px; object-fit: contain;" />
+                }
+                else
+                {
+                    <div class="product-image-placeholder rounded"
+                         style="height: 400px;">
+                        <span>Chưa có ảnh sản phẩm</span>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+        <div class="col-12 col-lg-6">
+
+            <div class="mb-3">
+
+                <a asp-controller="Product"
+                   asp-action="Index"
+                   asp-route-categoryId="@Model.CategoryId"
+                   class="badge text-bg-light text-decoration-none">
+                    @Model.CategoryName
+                </a>
+
+            </div>
+
+            <h1 class="h2 mb-3">
+                @Model.Name
+            </h1>
+
+            <div class="fs-3 fw-bold text-danger mb-4">
+                @Model.Price.ToString("N0") ₫
+            </div>
+
+            <div class="mb-4">
+
+                @if (Model.InStock)
+                {
+                    <div class="alert alert-success mb-0">
+                        Còn hàng - @Model.StockQuantity sản phẩm
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger mb-0">
+                        Sản phẩm hiện đang hết hàng
+                    </div>
+                }
+
+            </div>
+
+            <div class="mb-4">
+
+                <h2 class="h5">
+                    Mô tả sản phẩm
+                </h2>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p class="text-muted">
+                        @Model.Description
+                    </p>
+                }
+                else
+                {
+                    <p class="text-muted">
+                        Chưa có mô tả cho sản phẩm này.
+                    </p>
+                }
+
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex">
+
+                <button type="button"
+                        class="btn btn-primary btn-lg"
+                        disabled="@(!Model.InStock)">
+                    Thêm vào giỏ hàng
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-danger btn-lg"
+                        disabled="@(!Model.InStock)">
+                    Mua ngay
+                </button>
+
+            </div>
+
+            <small class="text-muted d-block mt-3">
+                Chức năng giỏ hàng sẽ được tích hợp với module Giỏ hàng.
+            </small>
+
+        </div>
+
+    </div>
+
+</div>

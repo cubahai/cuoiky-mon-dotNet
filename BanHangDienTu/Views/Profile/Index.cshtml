@@ -1,37 +1,214 @@
+@model BanHangDienTu.ViewModels.Account.ProfileViewModel
+
 @{
     ViewData["Title"] = "Hồ sơ cá nhân";
+
+    var hasPhone =
+        !string.IsNullOrWhiteSpace(Model.PhoneNumber);
+
+    var hasAddress =
+        !string.IsNullOrWhiteSpace(Model.Address);
+
+    var shippingInfoCompleted =
+        hasPhone && hasAddress;
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title mb-4">Hồ sơ của tôi</h3>
-                    <div class="mb-3">
-                        <label class="text-muted small">Tên người dùng:</label>
-                        <p class="fw-semibold fs-5 mb-1">Nguyễn Văn A</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-muted small">Email:</label>
-                        <p class="fw-semibold mb-1">nguyenvana@example.com</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-muted small">Số điện thoại:</label>
-                        <p class="fw-semibold mb-1">0901 234 567</p>
-                    </div>
-                    <hr />
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>Đơn mua của bạn:</strong>
-                            <p class="text-muted small mb-0">Theo dõi trạng thái và lịch sử mua hàng</p>
-                        </div>
-                        <a asp-controller="OrderHistory" asp-action="Index" class="btn btn-danger">
-                            Xem lịch sử mua hàng &rarr;
-                        </a>
-                    </div>
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-9">
+
+            <div class="d-flex flex-column flex-md-row
+                        justify-content-between
+                        align-items-md-center
+                        gap-3 mb-4">
+
+                <div>
+                    <h1 class="h2 mb-2">
+                        Hồ sơ cá nhân
+                    </h1>
+
+                    <p class="text-muted mb-0">
+                        Quản lý thông tin tài khoản và thông tin giao hàng của bạn.
+                    </p>
                 </div>
+
+                <div class="d-flex gap-2">
+
+                    <a asp-controller="Profile"
+                       asp-action="Edit"
+                       class="btn btn-primary">
+                        Chỉnh sửa thông tin
+                    </a>
+
+                    <a asp-controller="Profile"
+                       asp-action="ChangePassword"
+                       class="btn btn-outline-secondary">
+                        Đổi mật khẩu
+                    </a>
+
+                </div>
+
             </div>
+
+            @if (TempData["SuccessMessage"] is string successMessage)
+            {
+                <div class="alert alert-success">
+                    @successMessage
+                </div>
+            }
+
+            <div class="card shadow-sm border-0 mb-4">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="d-flex justify-content-between
+                                align-items-center mb-4">
+
+                        <div>
+                            <h2 class="h5 mb-1">
+                                Thông tin tài khoản
+                            </h2>
+
+                            <p class="text-muted small mb-0">
+                                Thông tin cơ bản của tài khoản đang đăng nhập.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+
+                            <div class="text-muted small mb-1">
+                                Họ và tên
+                            </div>
+
+                            <div class="fw-semibold fs-5">
+                                @Model.FullName
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 col-md-6">
+
+                            <div class="text-muted small mb-1">
+                                Email
+                            </div>
+
+                            <div class="fw-semibold fs-5">
+                                @Model.Email
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="d-flex flex-column flex-sm-row
+                                justify-content-between
+                                align-items-sm-center
+                                gap-2 mb-4">
+
+                        <div>
+
+                            <h2 class="h5 mb-1">
+                                Thông tin giao hàng
+                            </h2>
+
+                            <p class="text-muted small mb-0">
+                                Thông tin mặc định sử dụng khi đặt hàng.
+                            </p>
+
+                        </div>
+
+                        @if (shippingInfoCompleted)
+                        {
+                            <span class="badge text-bg-success">
+                                Đã đầy đủ
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-warning">
+                                Chưa đầy đủ
+                            </span>
+                        }
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <div class="text-muted small mb-1">
+                            Số điện thoại
+                        </div>
+
+                        @if (hasPhone)
+                        {
+                            <div class="fw-semibold">
+                                @Model.PhoneNumber
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted fst-italic">
+                                Chưa cập nhật số điện thoại
+                            </div>
+                        }
+
+                    </div>
+
+                    <hr />
+
+                    <div class="mt-4">
+
+                        <div class="text-muted small mb-1">
+                            Địa chỉ giao hàng
+                        </div>
+
+                        @if (hasAddress)
+                        {
+                            <div class="fw-semibold">
+                                @Model.Address
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted fst-italic">
+                                Chưa cập nhật địa chỉ giao hàng
+                            </div>
+                        }
+
+                    </div>
+
+                    @if (!shippingInfoCompleted)
+                    {
+                        <div class="alert alert-warning mt-4 mb-0">
+
+                            Bạn cần bổ sung đầy đủ
+                            <strong>số điện thoại</strong>
+                            và
+                            <strong>địa chỉ giao hàng</strong>
+                            trước khi đặt hàng.
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
+
 </div>
