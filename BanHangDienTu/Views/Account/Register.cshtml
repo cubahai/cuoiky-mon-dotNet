@@ -1,0 +1,239 @@
+@model BanHangDienTu.ViewModels.Account.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="row justify-content-center py-5">
+
+    <div class="col-12 col-md-8 col-lg-5">
+
+        <div class="card shadow-sm">
+
+            <div class="card-body p-4">
+
+                <h1 class="h3 text-center mb-4">
+                    Đăng ký tài khoản
+                </h1>
+
+                @if (TempData["SuccessMessage"] is string successMessage)
+                {
+                    <div class="alert alert-success">
+                        @successMessage
+                    </div>
+                }
+
+                <form asp-controller="Account"
+                      asp-action="Register"
+                      method="post"
+                      id="registerForm">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3">
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label asp-for="FullName"
+                               class="form-label">
+                        </label>
+
+                        <input asp-for="FullName"
+                               class="form-control"
+                               autocomplete="name" />
+
+                        <span asp-validation-for="FullName"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label asp-for="Email"
+                               class="form-label">
+                        </label>
+
+                        <input asp-for="Email"
+                               class="form-control"
+                               autocomplete="email" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label asp-for="Password"
+                               class="form-label">
+                        </label>
+
+                        <input asp-for="Password"
+                               class="form-control"
+                               autocomplete="new-password" />
+
+                        <span asp-validation-for="Password"
+                              class="text-danger">
+                        </span>
+
+                        <div class="mt-2 small">
+                            <div id="ruleLength" class="text-muted">
+                                ● Ít nhất 6 ký tự
+                            </div>
+
+                            <div id="ruleUppercase" class="text-muted">
+                                ● Có ít nhất 1 chữ hoa
+                            </div>
+
+                            <div id="ruleLowercase" class="text-muted">
+                                ● Có ít nhất 1 chữ thường
+                            </div>
+
+                            <div id="ruleDigit" class="text-muted">
+                                ● Có ít nhất 1 chữ số
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label asp-for="ConfirmPassword"
+                               class="form-label">
+                        </label>
+
+                        <input asp-for="ConfirmPassword"
+                               class="form-control"
+                               autocomplete="new-password" />
+
+                        <span asp-validation-for="ConfirmPassword"
+                              class="text-danger">
+                        </span>
+
+                        <div id="passwordMatchMessage"
+                             class="small mt-2">
+                        </div>
+
+                    </div>
+
+                    <div class="d-grid">
+
+                        <button type="submit"
+                                class="btn btn-primary btn-lg">
+                            Đăng ký
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function () {
+
+            const form = $("#registerForm");
+
+            const password = $("#Password");
+            const confirmPassword = $("#ConfirmPassword");
+
+            // Validation ngay trong lúc nhập.
+            form.find("input").on("input blur", function () {
+                $(this).valid();
+            });
+
+            function updateRule(element, isValid) {
+                element
+                    .toggleClass("text-success", isValid)
+                    .toggleClass("text-muted", !isValid);
+            }
+
+            function validatePasswordRules() {
+
+                const value = password.val() ?? "";
+
+                updateRule(
+                    $("#ruleLength"),
+                    value.length >= 6
+                );
+
+                updateRule(
+                    $("#ruleUppercase"),
+                    /[A-Z]/.test(value)
+                );
+
+                updateRule(
+                    $("#ruleLowercase"),
+                    /[a-z]/.test(value)
+                );
+
+                updateRule(
+                    $("#ruleDigit"),
+                    /\d/.test(value)
+                );
+            }
+
+            function validatePasswordMatch() {
+
+                const passwordValue =
+                    password.val() ?? "";
+
+                const confirmValue =
+                    confirmPassword.val() ?? "";
+
+                const message =
+                    $("#passwordMatchMessage");
+
+                if (confirmValue.length === 0) {
+                    message
+                        .text("")
+                        .removeClass(
+                            "text-success text-danger"
+                        );
+
+                    return;
+                }
+
+                if (passwordValue === confirmValue) {
+                    message
+                        .text("Mật khẩu xác nhận khớp.")
+                        .removeClass("text-danger")
+                        .addClass("text-success");
+                }
+                else {
+                    message
+                        .text("Mật khẩu xác nhận chưa khớp.")
+                        .removeClass("text-success")
+                        .addClass("text-danger");
+                }
+            }
+
+            password.on("input", function () {
+                validatePasswordRules();
+                validatePasswordMatch();
+
+                if (confirmPassword.val()) {
+                    confirmPassword.valid();
+                }
+            });
+
+            confirmPassword.on("input", function () {
+                validatePasswordMatch();
+            });
+
+            validatePasswordRules();
+        });
+    </script>
+}

@@ -1,43 +1,131 @@
-using Microsoft.EntityFrameworkCore;
 using BanHangDienTu.Data;
+using BanHangDienTu.Models.Entities;
+using BanHangDienTu.Repositories.Implementations;
+using BanHangDienTu.Repositories.Interfaces;
+using BanHangDienTu.Services.Identity;
+using BanHangDienTu.Services.Implementations;
+using BanHangDienTu.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace BanHangDienTu
+namespace BanHangDienTu;
+
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        var builder =
+            WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews();
 
-            // Đăng ký ApplicationDbContext với SQL Server
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddDbContext<ApplicationDbContext>(
+            options =>
+                options.UseSqlServer(
+                    builder.Configuration
+                        .GetConnectionString(
+                            "DefaultConnection")));
 
-            var app = builder.Build();
+        builder.Services
+            .AddIdentity<
+                ApplicationUser,
+                IdentityRole>(
+                options =>
+                {
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequireNonAlphanumeric = false;
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+                    options.User.RequireUniqueEmail = true;
+
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+
+                    options.Lockout.DefaultLockoutTimeSpan =
+                        TimeSpan.FromMinutes(5);
+                })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+        builder.Services.AddScoped<
+            IUserClaimsPrincipalFactory<ApplicationUser>,
+            ApplicationUserClaimsPrincipalFactory>();
+
+        builder.Services.ConfigureApplicationCookie(
+            options =>
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+                options.LoginPath =
+                    "/Account/Login";
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
+                options.AccessDeniedPath =
+                    "/Account/AccessDenied";
 
-            app.UseAuthorization();
+                options.Cookie.HttpOnly = true;
 
-            app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
+                options.SlidingExpiration = true;
 
-            app.Run();
+                options.ExpireTimeSpan =
+                    TimeSpan.FromHours(2);
+            });
+
+        builder.Services.AddScoped<
+            IProductRepository,
+            ProductRepository>();
+
+        builder.Services.AddScoped<
+            ICategoryRepository,
+            CategoryRepository>();
+
+        builder.Services.AddScoped<
+            IHomeService,
+            HomeService>();
+
+        builder.Services.AddScoped<
+            IProductService,
+            ProductService>();
+
+        builder.Services.AddScoped<
+            IAccountService,
+            AccountService>();
+
+        var app =
+            builder.Build();
+
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler(
+                "/Home/Error");
+
+            app.UseHsts();
         }
+
+        app.UseHttpsRedirection();
+
+        app.UseRouting();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapStaticAssets();
+
+        app.MapControllerRoute(
+            name: "areas",
+            pattern:
+                "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+        app.MapControllerRoute(
+                name: "default",
+                pattern:
+                    "{controller=Home}/{action=Index}/{id?}")
+            .WithStaticAssets();
+
+        if (app.Environment.IsDevelopment())
+        {
+            await DbInitializer.SeedAsync(
+                app.Services);
+        }
+
+        await app.RunAsync();
     }
 }
