@@ -1,0 +1,12 @@
+@model BanHangDienTu.ViewModels.Order.OrderDetailViewModel
+@{ ViewData["Title"] = "Đặt hàng thành công"; }
+
+<div class="py-5 text-center">
+    <div class="alert alert-success"><h1 class="h3">Đặt hàng thành công!</h1><p class="mb-0">Cảm ơn bạn đã mua sắm tại BanHangDienTu.</p></div>
+    <p>Mã đơn: <strong class="text-break">@Model.OrderNumber</strong></p>
+    <p>Tổng tiền đơn hàng: <strong>@Model.TotalAmount.ToString("N0") ₫</strong></p>
+    <p>Phương thức: Thanh toán khi nhận hàng (COD) · @Model.PaymentStatusText</p>
+    <p>Trạng thái đơn: @Model.StatusText</p>
+    <a asp-controller="OrderHistory" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Xem chi tiết đơn</a>
+    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary">Tiếp tục mua sắm</a>
+</div>

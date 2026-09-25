@@ -98,25 +98,32 @@
 
             </div>
 
-            <div class="d-grid gap-2 d-md-flex">
-
-                <button type="button"
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+            <form asp-controller="Cart" asp-action="Add" method="post">
+                <input type="hidden" name="ProductId" value="@Model.Id" />
+                <input type="hidden" name="Quantity" value="1" />
+                <div class="d-grid gap-2 d-md-flex">
+                <button type="submit"
                         class="btn btn-primary btn-lg"
                         disabled="@(!Model.InStock)">
                     Thêm vào giỏ hàng
                 </button>
 
-                <button type="button"
+                <button type="submit" name="BuyNow" value="true"
                         class="btn btn-outline-danger btn-lg"
                         disabled="@(!Model.InStock)">
                     Mua ngay
                 </button>
 
-            </div>
-
-            <small class="text-muted d-block mt-3">
-                Chức năng giỏ hàng sẽ được tích hợp với module Giỏ hàng.
-            </small>
+                </div>
+            </form>
+            <small class="text-muted d-block mt-3">Mua ngay sẽ thêm sản phẩm và chuyển đến xác nhận toàn bộ giỏ hàng.</small>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Product", new { id = Model.Id })" class="btn btn-primary btn-lg">Đăng nhập để mua hàng</a>
+            }
 
         </div>
 

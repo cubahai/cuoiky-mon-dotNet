@@ -89,6 +89,11 @@ public class Program
             IAccountService,
             AccountService>();
 
+        builder.Services.AddScoped<ICartRepository, CartRepository>();
+        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+        builder.Services.AddScoped<ICartService, CartService>();
+        builder.Services.AddScoped<IOrderService, OrderService>();
+
         var app =
             builder.Build();
 

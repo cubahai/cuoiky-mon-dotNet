@@ -1,0 +1,38 @@
+@model BanHangDienTu.ViewModels.Order.OrderDetailViewModel
+@{ ViewData["Title"] = "Chi tiết đơn hàng"; }
+
+<div class="py-4">
+    <a asp-action="Index">← Lịch sử đặt hàng</a>
+    <h1 class="h2 mt-4">Chi tiết đơn hàng</h1>
+    <p class="text-break">Mã đơn: <strong>@Model.OrderNumber</strong></p>
+    <p>Ngày đặt: @Model.CreatedAt.AddHours(7).ToString("dd/MM/yyyy HH:mm") (giờ Việt Nam)</p>
+    <div class="row g-3 mb-4">
+        <div class="col-md-6"><div class="card h-100"><div class="card-body">
+            <h2 class="h5">Thông tin nhận hàng</h2>
+            <p class="mb-1">@Model.RecipientName · @Model.PhoneNumber</p>
+            <p class="text-break">@Model.Address</p>
+            @if (!string.IsNullOrWhiteSpace(Model.Note)) { <p class="mb-0 text-break">Ghi chú: @Model.Note</p> }
+        </div></div></div>
+        <div class="col-md-6"><div class="card h-100"><div class="card-body">
+            <h2 class="h5">Trạng thái và thanh toán</h2>
+            <p>Đơn hàng: <strong>@Model.StatusText</strong></p>
+            <p>Thanh toán khi nhận hàng (COD)</p>
+            <p class="mb-0">Thanh toán: <strong>@Model.PaymentStatusText</strong></p>
+        </div></div></div>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Sản phẩm</th><th>Đơn giá lúc mua</th><th>Số lượng</th><th>Thành tiền</th></tr></thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr><td>
+                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl)) { <img src="@item.ImageUrl" alt="" width="64" height="64" class="object-fit-contain me-2" /> }
+                    @item.ProductName
+                </td><td class="text-nowrap">@item.UnitPrice.ToString("N0") ₫</td><td>@item.Quantity</td><td class="text-nowrap">@item.TotalPrice.ToString("N0") ₫</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="text-end"><p>Phí vận chuyển: Miễn phí</p><p class="fs-5">Tổng tiền: <strong class="text-danger">@Model.TotalAmount.ToString("N0") ₫</strong></p></div>
+</div>
