@@ -1,0 +1,74 @@
+﻿@model IEnumerable<BanHangDienTu.Models.Order>
+
+@{
+    ViewData["Title"] = "Quản lý Đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Quản lý Đơn hàng</h1>
+        <p class="page-sub">Theo dõi và cập nhật trạng thái các đơn đặt hàng của khách.</p>
+    </div>
+</div>
+
+<div class="card-panel">
+    <div class="table-responsive">
+        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);">
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Mã ĐH</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Khách hàng</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Ngày đặt</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Tổng tiền</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Trạng thái</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 16px; font-weight: 700; color: var(--teal);">#@item.Id</td>
+                            <td style="padding: 16px;">
+                                <strong>@item.CustomerName</strong>
+                                <div style="font-size: 12px; color: var(--text-2);">@item.PhoneNumber</div>
+                            </td>
+                            <td style="padding: 16px;">@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td style="padding: 16px; font-weight: 600;">@item.TotalAmount.ToString("N0") ₫</td>
+                            <td style="padding: 16px;">
+                                @if (item.Status == "Chờ xác nhận")
+                                {
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: rgba(249, 115, 22, 0.1); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2);">@item.Status</span>
+                                }
+                                else if (item.Status == "Đang giao")
+                                {
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2);">@item.Status</span>
+                                }
+                                else if (item.Status == "Hoàn thành")
+                                {
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: rgba(20, 184, 166, 0.1); color: var(--teal); border: 1px solid rgba(20, 184, 166, 0.2);">@item.Status</span>
+                                }
+                                else
+                                {
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">@item.Status</span>
+                                }
+                            </td>
+                            <td style="padding: 16px; display: flex; gap: 8px;">
+                                <a href="@Url.Action("Details", "Order", new { id = item.Id })" class="btn-ghost" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;"><i class="fa-solid fa-eye"></i> Chi tiết</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" style="padding: 32px; text-align: center; color: var(--text-2);">Chưa có đơn hàng nào trên hệ thống.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

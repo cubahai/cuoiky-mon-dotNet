@@ -1,0 +1,50 @@
+﻿@model IEnumerable<BanHangDienTu.Areas.Admin.ViewModels.UserViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý Khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Khách hàng</h1>
+        <p class="page-sub">Quản lý tài khoản và thông tin liên hệ của khách hàng trên hệ thống.</p>
+    </div>
+    <!-- Nút thêm tài khoản mới -->
+    <a href="@Url.Action("Create", "User")" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm tài khoản</a>
+</div>
+
+<div class="card-panel">
+    <div class="table-responsive">
+        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);">
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Tên tài khoản</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Email</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Số điện thoại</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <i class="fa-solid fa-circle-user" style="font-size: 24px; color: var(--teal);"></i>
+                                <strong>@item.FullName</strong>
+                            </div>
+                        </td>
+                        <td style="padding: 16px;">@item.Email</td>
+                        <td style="padding: 16px;">@(string.IsNullOrEmpty(item.PhoneNumber) ? "Chưa cập nhật" : item.PhoneNumber)</td>
+                        <td style="padding: 16px; display: flex; gap: 8px;">
+                            <!-- Nút Sửa và Xóa -->
+                            <a href="@Url.Action("Edit", "User", new { id = item.Id })" class="btn-ghost" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;"><i class="fa-solid fa-pen"></i> Sửa</a>
+                            <a href="@Url.Action("Delete", "User", new { id = item.Id })" class="btn-ghost" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; color: #ef4444;" onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?');"><i class="fa-solid fa-trash"></i> Xóa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

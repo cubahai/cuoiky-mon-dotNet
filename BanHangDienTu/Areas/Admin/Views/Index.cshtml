@@ -1,0 +1,75 @@
+﻿@model IEnumerable<BanHangDienTu.Areas.Admin.ViewModels.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý Sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Quản lý Sản phẩm</h1>
+        <p class="page-sub">Xem thống kê kinh doanh và quản lý thông tin hàng hóa của bạn.</p>
+    </div>
+    <a href="@Url.Action("Create", "Product")" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm sản phẩm mới</a>
+</div>
+
+<div class="card-panel">
+    <div class="table-responsive">
+        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);">
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Sản phẩm</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Giá tiền</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Tồn kho</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Trạng thái</th>
+                    <th style="padding: 16px; color: var(--text-2); font-weight: 600;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 16px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <img src="@item.ImageUrl" alt="Ảnh SP" style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; background: var(--bg-1);" onerror="this.src='https://via.placeholder.com/48/111119/2dd4bf?text=SP'" />
+                                    <div>
+                                        <div style="font-weight: bold; color: var(--text-1);">@item.Name</div>
+                                        <div style="font-size: 12px; color: var(--text-2);">ID: #@item.Id</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 16px; color: var(--teal-2); font-weight: bold;">@item.Price.ToString("N0") ₫</td>
+                            <td style="padding: 16px; font-weight: 600;">@item.StockQuantity chiếc</td>
+                            <td style="padding: 16px;">
+                                @if (item.StockQuantity > 10)
+                                {
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);">Còn hàng</span>
+                                }
+                                else if (item.StockQuantity > 0)
+                                {
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);">Sắp hết</span>
+                                }
+                                else
+                                {
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">Hết hàng</span>
+                                }
+                            </td>
+                            <td style="padding: 16px; display: flex; gap: 8px;">
+                                <a href="@Url.Action("Edit", "Product", new { id = item.Id })" class="btn-ghost" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;"><i class="fa-solid fa-pen"></i> Sửa</a>
+                                <a href="@Url.Action("Delete", "Product", new { id = item.Id })" class="btn-ghost" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; color: #ef4444;" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');"><i class="fa-solid fa-trash"></i> Xóa</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" style="padding: 32px; text-align: center; color: var(--text-2);">Chưa có sản phẩm nào trên hệ thống.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

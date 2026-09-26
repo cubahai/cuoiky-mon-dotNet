@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\DashBoard\" />
-    <Folder Include="Areas\Admin\Views\Shared\" />
-    <Folder Include="Areas\Admin\Views\Order\" />
-    <Folder Include="Areas\Admin\Views\Product\" />
     <Folder Include="wwwroot\Admin\" />
   </ItemGroup>
 

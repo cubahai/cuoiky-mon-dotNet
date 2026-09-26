@@ -1,4 +1,5 @@
-﻿using BanHangDienTu.Models.Entities;
+﻿using BanHangDienTu.Models;
+using BanHangDienTu.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,8 @@ public class ApplicationDbContext
         : base(options)
     {
     }
-
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
     public DbSet<Product> Products => Set<Product>();
 
     public DbSet<Category> Categories => Set<Category>();
