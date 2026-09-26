@@ -7,6 +7,22 @@
 <div class="container mt-4">
     <h2 class="mb-4">Giỏ hàng của bạn</h2>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     @if (Model == null || !Model.Any())
     {
         <div class="alert alert-info">
@@ -22,7 +38,7 @@
                         <th style="width: 100px;">Hình ảnh</th>
                         <th>Tên sản phẩm</th>
                         <th class="text-end" style="width: 150px;">Đơn giá</th>
-                        <th class="text-center" style="width: 120px;">Số lượng</th>
+                        <th class="text-center" style="width: 140px;">Số lượng</th>
                         <th class="text-end" style="width: 160px;">Thành tiền</th>
                         <th class="text-center" style="width: 100px;">Thao tác</th>
                     </tr>
@@ -32,22 +48,32 @@
                     {
                         <tr>
                             <td>
-                                <img src="@item.ImageUrl" alt="@item.ProductName" class="img-thumbnail" style="max-height: 70px; width: 70px; object-fit: cover;" />
+                                <img src="@(string.IsNullOrWhiteSpace(item.ImageUrl) ? "/images/default-product.svg" : item.ImageUrl)" alt="@item.ProductName" class="img-thumbnail" style="max-height: 70px; width: 70px; object-fit: cover;" onerror="this.onerror=null; this.src='/images/default-product.svg';" />
                             </td>
                             <td>
-                                <span class="fw-semibold">@item.ProductName</span>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none text-dark fw-semibold">
+                                    @item.ProductName
+                                </a>
                             </td>
                             <td class="text-end">
                                 @item.Price.ToString("N0") đ
                             </td>
                             <td class="text-center">
-                                <input type="number" class="form-control text-center mx-auto" style="width: 70px;" value="@item.Quantity" min="1" readonly />
+                                <form asp-action="UpdateQuantity" method="post" class="d-inline-flex align-items-center justify-content-center">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="btn btn-sm btn-outline-secondary px-2 py-0" title="Giảm số lượng">-</button>
+                                    <span class="mx-2 fw-semibold" style="min-width: 24px; text-align: center;">@item.Quantity</span>
+                                    <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="btn btn-sm btn-outline-secondary px-2 py-0" title="Tăng số lượng">+</button>
+                                </form>
                             </td>
                             <td class="text-end text-danger fw-bold">
                                 @item.TotalPrice.ToString("N0") đ
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-danger" title="Xóa">Xóa</button>
+                                <form asp-action="RemoveItem" method="post" class="d-inline" onsubmit="return confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?');">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">Xóa</button>
+                                </form>
                             </td>
                         </tr>
                     }
@@ -55,7 +81,14 @@
             </table>
         </div>
 
-        <div class="row justify-content-end mt-4">
+        <div class="row justify-content-between align-items-center mt-3">
+            <div class="col-auto">
+                <form asp-action="Clear" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?');">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        Xóa toàn bộ giỏ hàng
+                    </button>
+                </form>
+            </div>
             <div class="col-md-5 col-lg-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -74,8 +107,12 @@
                             <strong class="text-danger">@grandTotal.ToString("N0") đ</strong>
                         </div>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-danger btn-lg" type="button">Tiến hành Đặt hàng</button>
-                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Tiếp tục mua sắm</a>
+                            <a asp-action="Checkout" class="btn btn-danger btn-lg text-center text-decoration-none">
+                                Tiến hành Đặt hàng
+                            </a>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary text-center text-decoration-none">
+                                Tiếp tục mua sắm
+                            </a>
                         </div>
                     </div>
                 </div>

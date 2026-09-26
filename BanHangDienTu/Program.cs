@@ -1,3 +1,5 @@
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using BanHangDienTu.Data;
 using BanHangDienTu.Models.Entities;
 using BanHangDienTu.Repositories.Implementations;
@@ -16,6 +18,9 @@ public class Program
     {
         var builder =
             WebApplication.CreateBuilder(args);
+
+        builder.Services.AddSingleton<HtmlEncoder>(
+            HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
 
         builder.Services.AddControllersWithViews();
 
@@ -89,6 +94,23 @@ public class Program
             IAccountService,
             AccountService>();
 
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromHours(2);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+        });
+
+        builder.Services.AddScoped<
+            ICartService,
+            CartService>();
+
+        builder.Services.AddScoped<
+            IOrderService,
+            OrderService>();
+
         var app =
             builder.Build();
 
@@ -104,9 +126,12 @@ public class Program
 
         app.UseRouting();
 
+        app.UseSession();
+
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseStaticFiles();
         app.MapStaticAssets();
 
         app.MapControllerRoute(

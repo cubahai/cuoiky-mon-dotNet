@@ -1,0 +1,158 @@
+@model BanHangDienTu.ViewModels.Cart.CheckoutViewModel
+@using BanHangDienTu.Models.Constants
+@{
+    ViewData["Title"] = "Đặt hàng & Thanh toán";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="mb-3">
+        @if (Model.IsBuyNow && Model.Items.Count > 0)
+        {
+            <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.Items[0].ProductId" class="btn btn-outline-secondary btn-sm">
+                &larr; Quay lại sản phẩm
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                &larr; Quay lại Giỏ hàng
+            </a>
+        }
+    </div>
+
+    <h2 class="mb-4">Thông tin Đặt hàng & Thanh toán</h2>
+
+    <form asp-action="Checkout" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="IsBuyNow" />
+
+        <div class="row g-4">
+            <!-- Cột trái: Thông tin nhận hàng & Phương thức thanh toán -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold text-primary">1. Địa chỉ nhận hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="CustomerName" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <input asp-for="CustomerName" class="form-control" placeholder="Nhập họ và tên người nhận" />
+                            <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại nhận hàng" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ShippingAddress" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <textarea asp-for="ShippingAddress" rows="2" class="form-control" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+                            <span asp-validation-for="ShippingAddress" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <label asp-for="Note" class="form-label fw-semibold"></label>
+                            <input asp-for="Note" class="form-control" placeholder="Ghi chú thêm về đơn hàng (ví dụ: giao giờ hành chính...)" />
+                            <span asp-validation-for="Note" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold text-primary">2. Phương thức thanh toán</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@PaymentMethodConstants.Cod" id="paymentCod" checked onchange="toggleBankInfo(false)">
+                            <label class="form-check-label fw-semibold" for="paymentCod">
+                                Thanh toán khi nhận hàng (COD)
+                            </label>
+                            <div class="text-muted small">Thanh toán bằng tiền mặt khi shipper giao hàng tận nơi.</div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@PaymentMethodConstants.BankTransfer" id="paymentBank" onchange="toggleBankInfo(true)">
+                            <label class="form-check-label fw-semibold" for="paymentBank">
+                                Chuyển khoản ngân hàng (QR / STK)
+                            </label>
+                            <div class="text-muted small">Chuyển khoản trực tiếp qua ngân hàng hoặc quét mã QR.</div>
+                        </div>
+
+                        <div id="bankTransferInfo" class="alert alert-light border p-3 mt-2" style="display: none;">
+                            <div class="fw-bold text-dark mb-1">Thông tin chuyển khoản:</div>
+                            <ul class="list-unstyled mb-0 small text-secondary">
+                                <li><strong>Ngân hàng:</strong> MB Bank (Quân Đội)</li>
+                                <li><strong>Số tài khoản:</strong> <code>01102004</code></li>
+                                <li><strong>Chủ tài khoản:</strong> CỬA HÀNG BÁN HÀNG ĐIỆN TỬ</li>
+                                <li><strong>Nội dung CK:</strong> [Họ tên] - [Số điện thoại]</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Tóm tắt đơn hàng -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold">3. Đơn hàng của bạn (@Model.Items.Count sản phẩm)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush" style="max-height: 320px; overflow-y: auto;">
+                            @foreach (var item in Model.Items)
+                            {
+                                <div class="list-group-item d-flex align-items-center py-3">
+                                    <img src="@(string.IsNullOrWhiteSpace(item.ImageUrl) ? "/images/default-product.svg" : item.ImageUrl)" alt="@item.ProductName" class="img-thumbnail me-3" style="width: 55px; height: 55px; object-fit: cover;" onerror="this.onerror=null; this.src='/images/default-product.svg';" />
+                                    <div class="flex-grow-1 me-2">
+                                        <div class="fw-semibold small text-truncate" style="max-width: 200px;">@item.ProductName</div>
+                                        <div class="text-muted small">SL: x@(item.Quantity)</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-danger fw-bold small">@item.TotalPrice.ToString("N0") đ</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="p-3 bg-light border-top">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tạm tính:</span>
+                                <span class="fw-bold">@Model.GrandTotal.ToString("N0") đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Phí vận chuyển:</span>
+                                <span class="text-success fw-bold">Miễn phí</span>
+                            </div>
+                            <hr class="my-2" />
+                            <div class="d-flex justify-content-between mb-3 fs-5">
+                                <strong>Tổng thanh toán:</strong>
+                                <strong class="text-danger">@Model.GrandTotal.ToString("N0") đ</strong>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger btn-lg w-100 fw-bold py-2">
+                                Xác nhận Đặt hàng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleBankInfo(show) {
+            const bankBox = document.getElementById('bankTransferInfo');
+            if (bankBox) {
+                bankBox.style.display = show ? 'block' : 'none';
+            }
+        }
+    </script>
+}

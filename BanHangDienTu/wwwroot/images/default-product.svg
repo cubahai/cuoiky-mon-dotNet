@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#f8f9fa"/>
+  <rect x="1" y="1" width="198" height="198" rx="8" fill="none" stroke="#dee2e6" stroke-width="2"/>
+  <g fill="#adb5bd">
+    <path d="M70 75a30 30 0 0 1 60 0v10h10a5 5 0 0 1 5 5v65a5 5 0 0 1-5 5H60a5 5 0 0 1-5-5V90a5 5 0 0 1 5-5h10v-10zm12 0v10h36v-10a18 18 0 0 0-36 0zm-15 22v56h66V97H67z"/>
+  </g>
+  <text x="100" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#6c757d" text-anchor="middle">Sản phẩm</text>
+</svg>

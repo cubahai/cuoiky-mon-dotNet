@@ -1,4 +1,4 @@
-﻿using BanHangDienTu.Models;
+using BanHangDienTu.Models;
 using BanHangDienTu.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +29,14 @@ public class ApplicationDbContext
 
         modelBuilder.Entity<Product>()
             .Property(p => p.Price)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TotalAmount)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<OrderDetail>()
+            .Property(od => od.UnitPrice)
             .HasPrecision(18, 2);
 
         modelBuilder.Entity<Product>()

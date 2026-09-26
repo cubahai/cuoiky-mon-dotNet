@@ -6,6 +6,23 @@
 
 <div class="container py-4">
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            @TempData["SuccessMessage"]
+            <a asp-controller="Cart" asp-action="Index" class="alert-link ms-2">Xem giỏ hàng ngay &rarr;</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="mb-4">
         <a asp-controller="Product"
            asp-action="Index"
@@ -25,7 +42,8 @@
                     <img src="@Model.ImageUrl"
                          alt="@Model.Name"
                          class="img-fluid"
-                         style="max-height: 450px; object-fit: contain;" />
+                         style="max-height: 450px; object-fit: contain;"
+                         onerror="this.onerror=null; this.src='/images/default-product.svg';" />
                 }
                 else
                 {
@@ -65,7 +83,7 @@
                 @if (Model.InStock)
                 {
                     <div class="alert alert-success mb-0">
-                        Còn hàng - @Model.StockQuantity sản phẩm
+                        Còn hàng - @Model.StockQuantity sản phẩm có sẵn
                     </div>
                 }
                 else
@@ -98,25 +116,52 @@
 
             </div>
 
-            <div class="d-grid gap-2 d-md-flex">
+            @if (Model.InStock)
+            {
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.Id" />
 
-                <button type="button"
-                        class="btn btn-primary btn-lg"
-                        disabled="@(!Model.InStock)">
-                    Thêm vào giỏ hàng
-                </button>
+                    <div class="d-flex align-items-center mb-4">
+                        <label class="me-3 fw-semibold">Số lượng:</label>
+                        <div class="input-group" style="width: 140px;">
+                            <input type="number"
+                                   name="quantity"
+                                   class="form-control text-center"
+                                   value="1"
+                                   min="1"
+                                   max="@Model.StockQuantity"
+                                   required />
+                        </div>
+                        <span class="text-muted small ms-3">(Tối đa: @Model.StockQuantity)</span>
+                    </div>
 
-                <button type="button"
-                        class="btn btn-outline-danger btn-lg"
-                        disabled="@(!Model.InStock)">
-                    Mua ngay
-                </button>
+                    <div class="d-grid gap-2 d-md-flex">
 
-            </div>
+                        <button type="submit"
+                                name="returnUrl"
+                                value="@Context.Request.Path"
+                                class="btn btn-primary btn-lg">
+                            Thêm vào giỏ hàng
+                        </button>
 
-            <small class="text-muted d-block mt-3">
-                Chức năng giỏ hàng sẽ được tích hợp với module Giỏ hàng.
-            </small>
+                        <button type="submit"
+                                formaction="@Url.Action("BuyNow", "Cart")"
+                                class="btn btn-outline-danger btn-lg">
+                            Mua ngay
+                        </button>
+
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="d-grid gap-2 d-md-flex">
+                    <button type="button" class="btn btn-secondary btn-lg" disabled>
+                        Hết hàng
+                    </button>
+                </div>
+            }
 
         </div>
 

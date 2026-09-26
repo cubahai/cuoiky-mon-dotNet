@@ -1,21 +1,20 @@
-namespace BanHangDienTu.Models
-{
-    public class OrderItemViewModel
-    {
-        public string ProductName { get; set; } = string.Empty;
-        public string ImageUrl { get; set; } = string.Empty;
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public decimal TotalPrice => UnitPrice * Quantity;
-    }
+using System;
+using System.Collections.Generic;
 
-    public class OrderViewModel
-    {
-        public string OrderId { get; set; } = string.Empty;
-        public DateTime OrderDate { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public string StatusBadgeClass { get; set; } = "bg-secondary";
-        public decimal TotalAmount { get; set; }
-        public List<OrderItemViewModel> Items { get; set; } = new();
-    }
+namespace BanHangDienTu.Models;
+
+public class OrderHistoryViewModel
+{
+    public int Id { get; set; }
+    public string OrderId { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public string ShippingAddress { get; set; } = string.Empty;
+    public string? Note { get; set; }
+    public string PaymentMethod { get; set; } = string.Empty;
+    public DateTime OrderDate { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string StatusBadgeClass { get; set; } = "bg-secondary";
+    public decimal TotalAmount { get; set; }
+    public List<CartItemViewModel> Items { get; set; } = new();
 }

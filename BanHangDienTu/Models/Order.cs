@@ -1,30 +1,40 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using BanHangDienTu.Models.Constants;
 
-namespace BanHangDienTu.Models
+namespace BanHangDienTu.Models;
+
+public class Order
 {
-    public class Order
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        public string CustomerName { get; set; }
+    public string? UserId { get; set; }
 
-        [Required]
-        public string PhoneNumber { get; set; }
+    [Required(ErrorMessage = "Vui lòng nhập họ và tên")]
+    [StringLength(100)]
+    public string CustomerName { get; set; } = string.Empty;
 
-        [Required]
-        public string ShippingAddress { get; set; }
+    [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+    [StringLength(20)]
+    public string PhoneNumber { get; set; } = string.Empty;
 
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+    [Required(ErrorMessage = "Vui lòng nhập địa chỉ giao hàng")]
+    [StringLength(500)]
+    public string ShippingAddress { get; set; } = string.Empty;
 
-        public decimal TotalAmount { get; set; }
+    [StringLength(500)]
+    public string? Note { get; set; }
 
-        // Trạng thái: "Chờ xác nhận", "Đang giao", "Hoàn thành", "Đã hủy"
-        public string Status { get; set; } = "Chờ xác nhận";
+    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
-        // Liên kết 1-Nhiều với bảng OrderDetail
-        public ICollection<OrderDetail> OrderDetails { get; set; }
-    }
+    public decimal TotalAmount { get; set; }
+
+    [StringLength(50)]
+    public string Status { get; set; } = OrderStatus.Pending;
+
+    [StringLength(50)]
+    public string PaymentMethod { get; set; } = PaymentMethodConstants.Cod;
+
+    public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 }
